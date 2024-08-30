@@ -1,4 +1,4 @@
-import {model, Schema, type Document } from "mongoose";
+import { model, Schema, type Document } from "mongoose";
 
 
 export interface IAuth extends Document {
@@ -17,6 +17,6 @@ const AuthSchema: Schema<IAuth> = new Schema({
     imageUri: { type: String, required: false },
 })
 
-const Auth = model<IAuth>('Auth',AuthSchema)
+const Auth = model<IAuth>('auth', AuthSchema)
 
 export default Auth;
