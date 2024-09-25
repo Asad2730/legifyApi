@@ -1,7 +1,7 @@
 import { type Request, type Response } from 'express'
 
 import upload from '../config/multer';
-import { AuthenticateUser, RegisterUserService } from '../services/user';
+import { AuthenticateUser, SendPasswordResetLink, RegisterUserService, ChangePassword } from '../services/user';
 
 export const RegisterUser = async (req: Request, res: Response) => {
     upload.single('image')(req, res, async (err) => {
@@ -21,8 +21,30 @@ export const RegisterUser = async (req: Request, res: Response) => {
 export const LoginUser = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body
-        const authService = await AuthenticateUser(email,password)
-        res.json(authService)
+        const authService = await AuthenticateUser(email, password)
+        return res.json(authService)
+    } catch (ex) {
+        return res.json(ex)
+    }
+}
+
+
+export const ForgotPassword = async (req: Request, res: Response) => {
+    try {
+        const { email } = req.body;
+        const result = await SendPasswordResetLink(email)
+       return res.json(result)
+    } catch (ex) {
+        return res.json(ex)
+    }
+}
+
+
+export const ResetPassword = async (req: Request, res: Response) => {
+    try {
+        const { id, password, password_confirmation } = req.body
+        const updateResponse = await ChangePassword(id, password, password_confirmation)
+        return res.json(updateResponse)
     } catch (ex) {
         return res.json(ex)
     }

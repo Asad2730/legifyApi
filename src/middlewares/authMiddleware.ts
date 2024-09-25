@@ -26,5 +26,16 @@ export function verifyToken(req:Request,res:Response,next:NextFunction) {
     }
 };
 
+export const isValidEmail = (email:string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+};
+
+
+export const isPasswordValid = (password:string)=> {
+   const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{6,14}$)/;
+   return passwordRegex.test(password)
+}
+
 
 
