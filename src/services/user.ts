@@ -14,13 +14,16 @@ const secret: string = process.env.JWT_SECRET as string
 
 export const RegisterUserService = async (auth: IAuth) => {
   try {
-    const hashedPassword = await bcrypt.hash(auth.password, 10);
+    
+    
     if (!auth.name || !auth.password || !auth.email) return Promise.reject(`Name, email, and password must not be empty`)
 
-    if (!isPasswordValid(auth.password)) return Promise.reject(`Password must be between 6 to 14 characters long, contain at
-         least one uppercase letter and one special character`);
-
     if (!isValidEmail(auth.email)) return Promise.reject(`Email id  not valid`)
+
+    if (!isPasswordValid(auth.password)) return Promise.reject(`Password must be between 6 to 14 characters long, contain at
+      least one uppercase letter and one special character`);
+
+    const hashedPassword = await bcrypt.hash(auth.password, 10);
 
     const authBody = {
       name: auth.name,
@@ -116,7 +119,7 @@ export const SendOtpCode = async (email: string) => {
 
     const otp = generateOtp();
     const hashedOtp = await bcrypt.hash(otp, 10);
-    const expires = Date.now() + 5 * 60 * 1000; 
+    const expires = Date.now() + 5 * 60 * 1000;
     otps[email] = { otp: hashedOtp, expires };
 
     const transporter = nodemailer.createTransport({
@@ -154,7 +157,7 @@ export const ConfirmOtpCode = async (email: string, otp: string) => {
     const isOtpValid = await bcrypt.compare(otp, hashedOtp);
     if (!isOtpValid) return Promise.reject('Invalid OTP');
 
-    delete otps[email]; 
+    delete otps[email];
     return Promise.resolve('OTP confirmed successfully');
   } catch (err) {
     return Promise.reject(`Error confirming OTP: ${err}`);
