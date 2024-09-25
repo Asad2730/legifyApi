@@ -103,3 +103,64 @@ export const ChangePassword = async (id: any, password: string, password_confirm
     return Promise.reject(`Error changing password: ${err}`);
   }
 }
+
+
+// Store OTPs temporarily (in-memory), for a production system use Redis or database.
+const otps: Record<string, { otp: string; expires: number }> = {};
+const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+export const SendOtpCode = async (email: string) => {
+  try {
+    if (!isValidEmail(email)) return Promise.reject('Email id not valid');
+
+
+    const otp = generateOtp();
+    const hashedOtp = await bcrypt.hash(otp, 10);
+    const expires = Date.now() + 5 * 60 * 1000; 
+    otps[email] = { otp: hashedOtp, expires };
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'your-email@gmail.com',
+        pass: 'your-email-password',
+      }
+    });
+
+    const mailOptions = {
+      from: 'your-email@gmail.com',
+      to: email,
+      subject: 'Your OTP Code',
+      text: `Your OTP code is: ${otp}. This code is valid for 5 minutes.`,
+      html: `<p>Your OTP code is: <strong>${otp}</strong>. This code is valid for 5 minutes.</p>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    return Promise.resolve(`OTP sent successfully to ${email}`);
+  } catch (err) {
+    return Promise.reject(`Error sending OTP: ${err}`);
+  }
+};
+
+export const ConfirmOtpCode = async (email: string, otp: string) => {
+  try {
+    const storedOtpData = otps[email];
+    if (!storedOtpData) return Promise.reject('No OTP found for this email');
+
+    const { otp: hashedOtp, expires } = storedOtpData;
+
+    if (Date.now() > expires) return Promise.reject('OTP has expired');
+
+    const isOtpValid = await bcrypt.compare(otp, hashedOtp);
+    if (!isOtpValid) return Promise.reject('Invalid OTP');
+
+    delete otps[email]; 
+    return Promise.resolve('OTP confirmed successfully');
+  } catch (err) {
+    return Promise.reject(`Error confirming OTP: ${err}`);
+  }
+};
+
+
+
+
