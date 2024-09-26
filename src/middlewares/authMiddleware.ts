@@ -37,5 +37,16 @@ export const isPasswordValid = (password:string)=> {
    return passwordRegex.test(password)
 }
 
+export const isValidPhoneNumber = (phone: string): boolean => {
+    const phoneRegex = /^\+?[1-9]\d{1,14}$/; 
+    return phoneRegex.test(phone);
+};
+
+
+export const isValidWebsite = (website: string): boolean => {
+    const urlRegex = /^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\- .\/?%&=]*)?$/;
+    return urlRegex.test(website);
+};
+
 
 

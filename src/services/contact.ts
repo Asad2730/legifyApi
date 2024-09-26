@@ -1,11 +1,19 @@
 import mongoose from "mongoose";
 import { Contact, ContactInfo, type IContact, type IContactInfo } from "../models/contact";
+import { isValidEmail,isValidPhoneNumber,isValidWebsite } from "../middlewares/authMiddleware";
 
 
+const validateContactInfo = (contactInfo:IContactInfo):Promise<string>=>{
+    if(!contactInfo.email.every(isValidEmail)) return Promise.reject(`one or more email adresses ar invalid`)
+    if(!contactInfo.phone.every(isValidPhoneNumber)) return Promise.reject(`One or more phone nos are invalid`)
+    if(!contactInfo.website.every(isValidWebsite)) return Promise.reject(`one or more website urls are invalid`)
+    return Promise.resolve(`validation successful`)            
+}
 
 export const CreateContactService = async (body: IContact): Promise<string> => {
     try {
         const { contact_info, ...contactData } = body
+        await validateContactInfo(contact_info as IContactInfo)
         const contactInfo: IContactInfo = await ContactInfo.create(contact_info)
         await Contact.create({ ...contactData, contact_info: contactInfo._id })
         return Promise.resolve(`Contact created Successfully`)
@@ -57,6 +65,7 @@ export const ContactByIDService = async (id: any): Promise<IContact> => {
 
 export const UpdateContactService = async (id: any, contact: IContact): Promise<string> => {
     try {
+        await validateContactInfo(contact.contact_info as IContactInfo)
         const update_contact: IContact = await ContactByIDService(id)
         await Contact.updateOne(id, { $set: contact })
         if (contact.contact_info) await ContactInfo.updateOne({ _id: update_contact.contact_info }, { $set: contact.contact_info })

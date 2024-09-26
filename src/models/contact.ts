@@ -14,7 +14,7 @@ const ContactInfoSchema = new Schema<IContactInfo>({
 
 
 export interface IContact extends Document {
-    type: 'Company' | 'Individual';
+    type: 'company' | 'individual';
     prefix: string;
     first_name: string;
     middle_name?: string;
@@ -25,7 +25,7 @@ export interface IContact extends Document {
 
 
 const ContactSchema = new Schema<IContact>({
-    type: { type: String, enum: ['Company', 'Individual'], required: true },
+    type: { type: String, enum: ['company', 'individual'], required: true },
     prefix: { type: String, required: true },
     first_name: { type: String, required: true },
     middle_name: { type: String, default: '' },
