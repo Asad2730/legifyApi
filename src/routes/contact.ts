@@ -4,11 +4,11 @@ import { ContactByID, ContactDelete, ContactList, ContactUpdate, CreateContact }
 
 const contactRoutes = Router();
 
-contactRoutes.get('/',ContactList)
-contactRoutes.get('/:id',ContactByID)
-contactRoutes.post('/',CreateContact)
+contactRoutes.get('/list',ContactList)
+contactRoutes.get('/detail',ContactByID)
+contactRoutes.post('/store',CreateContact)
 contactRoutes.put('/:id',ContactUpdate)
-contactRoutes.delete('/:id',ContactDelete)
+contactRoutes.delete('/delete/:id',ContactDelete)
 
 
 export { contactRoutes };

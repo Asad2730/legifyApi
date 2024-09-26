@@ -15,7 +15,9 @@ export const CreateTask = async (req: Request, res: Response) => {
 
 export const TaskList = async (req: Request, res: Response) => {
     try {
-        const rs = await TaskListService()
+        const page = Number.parseInt(req.query.page as string) || 1
+        const per_page = Number.parseInt(req.query.per_page as string) || 5
+        const rs = await TaskListService(page,per_page)
         return res.json(rs)
     } catch (err) {
         return res.json(err)

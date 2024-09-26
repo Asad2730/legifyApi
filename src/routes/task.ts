@@ -5,8 +5,8 @@ import { CreateTask, DeleteTask, TaskById, TaskList, UpdateTask, UpdateTaskStatu
 
 const taskRoutes = Router();
 
- taskRoutes.post('/',CreateTask)
- taskRoutes.get('/',TaskList)
+ taskRoutes.post('/task',CreateTask)
+ taskRoutes.get('/list',TaskList)
  taskRoutes.get('/:id',TaskById)
  taskRoutes.put('/:id',UpdateTask)
  taskRoutes.delete('/:id',DeleteTask)

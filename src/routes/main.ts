@@ -7,7 +7,7 @@ import { contactRoutes } from './contact';
 const router = Router();
 
 router.use('/auth',authRoutes)
-router.use('/contact',verifyToken,contactRoutes)
-router.use('/task',verifyToken,taskRoutes)
+router.use('/management/contact',verifyToken,contactRoutes)
+router.use('/management/task',verifyToken,taskRoutes)
 
 export default router

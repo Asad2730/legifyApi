@@ -23,10 +23,27 @@ export const CreateTaskService = async (taskBody: ITask): Promise<string> => {
     }
 }
 
-export const TaskListService = async (): Promise<ITask[]> => {
+interface IPaginatedTasksList {
+    current_page: number;
+    data: ITask[];
+    total: number;
+    per_page: number;
+}
+
+
+export const TaskListService = async (page: number = 1, per_page: number = 5): Promise<IPaginatedTasksList> => {
     try {
+        const skip = (page - 1) * per_page
         const tasks: ITask[] = await Task.find().populate('taskStatus').populate('contact')
-        return Promise.resolve(tasks)
+        .skip(skip)
+        .limit(per_page)
+        const total:number = await Task.countDocuments()
+        return Promise.resolve({
+            current_page:page,
+            data:tasks,
+            total:total,
+            per_page:per_page
+        })
     } catch (err) {
         return Promise.reject(`Error getting TaskList ${err}`)
     }

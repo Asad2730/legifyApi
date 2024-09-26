@@ -15,10 +15,28 @@ export const CreateContactService = async (body: IContact): Promise<string> => {
 }
 
 
-export const ContactListService = async (): Promise<IContact[]> => {
+interface IPaginatedContacts {
+    current_page: number;
+    data: IContact[];
+    total: number;
+    per_page: number;
+}
+
+
+export const ContactListService = async (page: number = 1, per_page: number = 5): Promise<IPaginatedContacts> => {
     try {
+        const skip = (page - 1) * per_page
         const contacts: IContact[] = await Contact.find().populate('contactInfo')
-        return Promise.resolve(contacts)
+            .skip(skip)
+            .limit(per_page)
+        const total: number = await Contact.countDocuments()
+
+        return Promise.resolve({
+            current_page: page,
+            data: contacts,
+            total: total,
+            per_page: per_page
+        })
     } catch (err) {
         return Promise.reject(`Error getting Contacts ${err}`)
     }
